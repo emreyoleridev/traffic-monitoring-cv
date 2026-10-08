@@ -5,9 +5,11 @@
 from __future__ import annotations
 
 import tempfile
+import time
 from pathlib import Path
 
 import cv2
+import imageio_ffmpeg
 import numpy as np
 import pandas as pd
 import streamlit as st
@@ -24,9 +26,25 @@ SAMPLES = ROOT / "samples"
 st.set_page_config(page_title="Traffic Monitoring", page_icon="🚦", layout="wide")
 
 
+MAX_FRAMES = 1800  # ~1 min at 30 fps; keeps uploads from running forever on a shared CPU
+
+
 @st.cache_resource
 def load(path: str) -> Detector:
     return Detector(path)
+
+
+def to_mp4(frames: list[np.ndarray], fps: float) -> bytes:
+    """H.264 encode RGB frames so the browser's <video> can play them (OpenCV's mp4v can't)."""
+    h, w = frames[0].shape[:2]
+    with tempfile.NamedTemporaryFile(suffix=".mp4") as f:
+        writer = imageio_ffmpeg.write_frames(f.name, (w, h), fps=fps, codec="libx264", pix_fmt_out="yuv420p",
+                                             macro_block_size=1)
+        writer.send(None)
+        for fr in frames:
+            writer.send(np.ascontiguousarray(fr))
+        writer.close()
+        return Path(f.name).read_bytes()
 
 
 with st.sidebar:
@@ -85,26 +103,52 @@ with tab_vid:
         if clips:
             path = str(st.selectbox("Sample clip", clips, format_func=lambda p: p.stem))
     line = st.slider("Counting line (fraction of height)", 0.2, 0.9, 0.6, 0.05)
-    max_frames = st.slider("Max frames", 10, 300, 60, 10)
-    if path and st.button("Run", type="primary"):
+    if path and st.button("▶ Play & count", type="primary"):
         cap = cv2.VideoCapture(path)
-        counter, view, prog, rows = LineCounter(line), st.empty(), st.progress(0.0), []
+        fps = cap.get(cv2.CAP_PROP_FPS) or 25
+        n_frames = min(int(cap.get(cv2.CAP_PROP_FRAME_COUNT)) or MAX_FRAMES, MAX_FRAMES)
+        counter, rows, frames_out = LineCounter(line), [], []
+        left, right = st.columns([3, 1])
+        view = left.empty()
+        prog = left.progress(0.0)
+        live = right.empty()
         det.reset_tracker()
-        for i in range(max_frames):
+        t_next = time.perf_counter()
+        for i in range(n_frames):
             ok, frame = cap.read()
             if not ok:
                 break
             tr = det.track(frame, conf=conf, iou=iou)
             counter.update(tr, frame.shape[0])
             out = draw(frame, tr[:, :4], [f"#{int(t)} {CLASSES[int(c)]}" for t, c in tr[:, [4, 6]]], tr[:, 6])
-            view.image(cv2.cvtColor(counter.draw(out), cv2.COLOR_BGR2RGB), width="stretch")
-            rows.append(dict(frame=i, in_view=len(tr), crossed=counter.total()))
-            prog.progress((i + 1) / max_frames)
+            out = cv2.cvtColor(counter.draw(out, in_view=len(tr)), cv2.COLOR_BGR2RGB)
+            frames_out.append(out)
+            # play at the clip's own speed: wait until this frame's slot (never faster than real time)
+            t_next += 1 / fps
+            time.sleep(max(0.0, t_next - time.perf_counter()))
+            view.image(out, width="stretch")
+            with live.container():
+                st.metric("Crossed the line", counter.total())
+                for c, n in counter.per_class().items():
+                    st.metric(c, n)
+                st.metric("In view now", len(tr))
+                st.caption(f"t = {i / fps:.1f} s / {n_frames / fps:.1f} s")
+            rows.append(dict(second=round(i / fps, 2), in_view=len(tr), crossed=counter.total()))
+            prog.progress((i + 1) / n_frames)
         cap.release()
-        st.success(f"{counter.total()} vehicles crossed the line")
-        st.dataframe(pd.DataFrame({d: dict(c) for d, c in counter.counts.items()}).reindex(CLASSES).fillna(0)
-                     .astype(int))
-        st.line_chart(pd.DataFrame(rows).set_index("frame"))
+        st.session_state.video_result = dict(
+            src=path, mp4=to_mp4(frames_out, fps), total=counter.total(), rows=rows,
+            table=pd.DataFrame({d: dict(c) for d, c in counter.counts.items()}).reindex(CLASSES).fillna(0).astype(int))
+
+    res = st.session_state.get("video_result")
+    if res and res["src"] == path:
+        st.success(f"{res['total']} vehicles crossed the line")
+        st.subheader("Replay with counts")
+        st.video(res["mp4"])
+        st.download_button("Download annotated video", res["mp4"], "traffic_counted.mp4", "video/mp4")
+        c1, c2 = st.columns([1, 2])
+        c1.dataframe(res["table"])
+        c2.line_chart(pd.DataFrame(res["rows"]).set_index("second"))
 
 with tab_metrics:
     m = ROOT / "results" / "metrics.csv"

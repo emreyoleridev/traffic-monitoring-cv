@@ -51,10 +51,22 @@ class LineCounter:
     def total(self) -> int:
         return sum(sum(c.values()) for c in self.counts.values())
 
-    def draw(self, img: np.ndarray) -> np.ndarray:
+    def per_class(self) -> dict[str, int]:
+        return {c: self.counts["down"][c] + self.counts["up"][c] for c in CLASSES}
+
+    def draw(self, img: np.ndarray, in_view: int | None = None) -> np.ndarray:
+        """Counting line + a running-count panel in the top-left corner."""
         y = int(self.frac * img.shape[0])
         cv2.line(img, (0, y), (img.shape[1], y), (0, 220, 255), 2)
-        txt = f"down {sum(self.counts['down'].values())}  up {sum(self.counts['up'].values())}"
-        cv2.putText(img, txt, (10, y - 8), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 0, 0), 4, cv2.LINE_AA)
-        cv2.putText(img, txt, (10, y - 8), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 220, 255), 2, cv2.LINE_AA)
+        lines = [f"Crossed: {self.total()}  (down {sum(self.counts['down'].values())}"
+                 f" / up {sum(self.counts['up'].values())})",
+                 *(f"  {c}: {n}" for c, n in self.per_class().items())]
+        if in_view is not None:
+            lines.append(f"In view: {in_view}")
+        h = 22 * len(lines) + 12
+        panel = img[8:8 + h, 8:300]
+        panel[:] = (panel * 0.35).astype(np.uint8)
+        for i, t in enumerate(lines):
+            cv2.putText(img, t, (16, 30 + 22 * i), cv2.FONT_HERSHEY_SIMPLEX, 0.55,
+                        (0, 220, 255) if i == 0 else (255, 255, 255), 1 if i else 2, cv2.LINE_AA)
         return img
