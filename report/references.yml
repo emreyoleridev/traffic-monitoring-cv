@@ -1,0 +1,61 @@
+redmon2016yolo:
+  type: article
+  title: "You Only Look Once: Unified, Real-Time Object Detection"
+  author: ["Redmon, Joseph", "Divvala, Santosh", "Girshick, Ross", "Farhadi, Ali"]
+  date: 2016
+  page-range: 779-788
+  parent: {type: proceedings, title: Proceedings of the IEEE Conference on Computer Vision and Pattern Recognition (CVPR)}
+
+jocher2024yolo11:
+  type: repository
+  title: Ultralytics YOLO11
+  author: ["Jocher, Glenn", "Qiu, Jing"]
+  date: 2024
+  version: 11.0.0
+  url: https://github.com/ultralytics/ultralytics
+
+lin2014coco:
+  type: article
+  title: "Microsoft COCO: Common Objects in Context"
+  author: ["Lin, Tsung-Yi", "Maire, Michael", "Belongie, Serge", "Hays, James", "Perona, Pietro", "Ramanan, Deva", "Dollár, Piotr", "Zitnick, C. Lawrence"]
+  date: 2014
+  page-range: 740-755
+  parent: {type: proceedings, title: Proceedings of the European Conference on Computer Vision (ECCV)}
+
+ciaglia2022rf100:
+  type: article
+  title: "Roboflow 100: A Rich, Multi-Domain Object Detection Benchmark"
+  author: ["Ciaglia, Floriana", "Zuppichini, Francesco Saverio", "Guerrie, Paul", "McQuade, Mark", "Solawetz, Jacob"]
+  date: 2022
+  parent: {type: periodical, title: arXiv preprint arXiv:2211.13523}
+
+vehicles2023:
+  type: web
+  title: "Vehicles (q0x2v) — RF100 object detection dataset, CC BY 4.0"
+  organization: Roboflow 100
+  url: https://huggingface.co/datasets/LibreYOLO/vehicles-q0x2v
+
+zhang2022bytetrack:
+  type: article
+  title: "ByteTrack: Multi-Object Tracking by Associating Every Detection Box"
+  author: ["Zhang, Yifu", "Sun, Peize", "Jiang, Yi", "Yu, Dongdong", "Weng, Fucheng", "Yuan, Zehuan", "Luo, Ping", "Liu, Wenyu", "Wang, Xinggang"]
+  date: 2022
+  page-range: 1-21
+  parent: {type: proceedings, title: Proceedings of the European Conference on Computer Vision (ECCV)}
+
+kaufman2012leakage:
+  type: article
+  title: "Leakage in Data Mining: Formulation, Detection, and Avoidance"
+  author: ["Kaufman, Shachar", "Rosset, Saharon", "Perlich, Claudia", "Stitelman, Ori"]
+  date: 2012
+  parent: {type: periodical, title: ACM Transactions on Knowledge Discovery from Data, volume: 6, issue: 4}
+  serial-number: {doi: 10.1145/2382577.2382579}
+
+padilla2021metrics:
+  type: article
+  title: A Comparative Analysis of Object Detection Metrics with a Companion Open-Source Toolkit
+  author: ["Padilla, Rafael", "Passos, Wesley L.", "Dias, Thadeu L. B.", "Netto, Sergio L.", "da Silva, Eduardo A. B."]
+  date: 2021
+  page-range: "279"
+  parent: {type: periodical, title: Electronics, volume: 10, issue: 3}
+  serial-number: {doi: 10.3390/electronics10030279}
