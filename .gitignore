@@ -1,0 +1,11 @@
+.venv/
+__pycache__/
+data/
+runs/
+results/val/coco_pretrained/
+results/streamlit.log
+results/train_*.log
+models/yolo11s.pt
+.DS_Store
+results/test.yaml
+results/eda/frames.csv

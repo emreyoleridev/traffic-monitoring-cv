@@ -1,0 +1,1 @@
+raw roboflow test frames with a train neighbour within ±2 frames: 79.3%

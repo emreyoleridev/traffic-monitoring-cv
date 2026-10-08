@@ -1,0 +1,30 @@
+[
+  {
+    "model": "coco_pretrained",
+    "mAP50": 0.349,
+    "mAP50_95": 0.2201,
+    "precision": 0.3192,
+    "recall": 0.5379,
+    "ms_per_img": 123.59,
+    "AP50-95 car": 0.3603,
+    "AP50-95 bus": 0.0984,
+    "AP50-95 truck": 0.2016,
+    "count_MAE": 4.59,
+    "count_bias": -3.98,
+    "level_acc": 0.648
+  },
+  {
+    "model": "finetuned",
+    "mAP50": 0.4791,
+    "mAP50_95": 0.2876,
+    "precision": 0.7593,
+    "recall": 0.5251,
+    "ms_per_img": 78.12,
+    "AP50-95 car": 0.4051,
+    "AP50-95 bus": 0.0455,
+    "AP50-95 truck": 0.4123,
+    "count_MAE": 9.2,
+    "count_bias": 9.13,
+    "level_acc": 0.232
+  }
+]

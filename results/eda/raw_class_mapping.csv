@@ -1,0 +1,13 @@
+raw_class,cls,boxes
+big bus,bus,816
+big truck,truck,3632
+bus-l-,bus,398
+bus-s-,bus,148
+car,car,31641
+mid truck,truck,703
+small bus,bus,263
+small truck,truck,5842
+truck-l-,truck,2278
+truck-m-,truck,3672
+truck-s-,truck,1363
+truck-xl-,truck,821
