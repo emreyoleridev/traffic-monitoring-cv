@@ -10,6 +10,8 @@ with a Streamlit app to try it on your own images and clips.
 - **Analytics:** per-class counts, heavy-vehicle share, road occupancy, congestion level,
   ByteTrack line-crossing counter for video.
 
+**Live demo:** [https://emreyoleridev-traffic-monitoring-cv-app-fldhll.streamlit.app/](https://emreyoleridev-traffic-monitoring-cv-app-fldhll.streamlit.app/)
+
 ## Results (held-out time blocks, 611 images)
 
 | Metric | COCO YOLO11n (baseline) | Fine-tuned YOLO11n |
